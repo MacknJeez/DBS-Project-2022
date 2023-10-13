@@ -1,0 +1,325 @@
+ #The group 
+create database vacmang;
+use vacmang;
+
+
+#tables----------------------------------------------------------------------------------------------
+
+
+CREATE TABLE Vaccine( 
+    vid int(5) NOT NULL,
+  	vname varchar(15),
+  	cost float(10),
+  	price float(10),                                        #filled by procedure sellp
+  	
+  	PRIMARY KEY (vid)
+);
+
+CREATE TABLE Hospital(
+  	hid int NOT NULL,
+  	hname varchar(15),
+  	haddress varchar(15),
+  	vid int,
+  	charges float(10),
+  	
+  	PRIMARY KEY (hid),
+  	FOREIGN KEY (vid) REFERENCES Vaccine(vid)
+);
+
+CREATE TABLE Patient(
+	pid int NOT NULL,
+  	pname varchar(15),
+  	age int,
+  	pgender varchar(1),
+  	paddress varchar(15),
+  	pphnum int,
+  	vid int,
+  	hid int,
+  	doses int,
+  	charged float(10), 			                                  #filled by procedure shotc 
+  	
+  	PRIMARY KEY (pid),
+    FOREIGN KEY (vid) REFERENCES Vaccine(vid),
+  	FOREIGN KEY (hid) REFERENCES Hospital(hid)
+);
+
+CREATE TABLE Nurse(                
+	nid int NOT NULL,
+  	nname varchar(15),
+  	nage int,
+  	ngender varchar(1),
+  	naddress varchar(15),
+  	nphnum int,
+  	experience int,
+  	hid int,
+  	
+  	PRIMARY KEY (nid),
+  	FOREIGN KEY (hid) REFERENCES Hospital(hid)
+);
+
+CREATE TABLE ShotReco(
+	sid int,
+  	pid int,
+  	nid int,
+  	hid int,
+  	vid	int,
+  	charge float(10),
+    shotnum int,
+  	
+  	PRIMARY KEY (sid),
+    FOREIGN KEY (pid) REFERENCES Patient(pid),
+  	FOREIGN KEY (vid) REFERENCES Vaccine(vid),
+  	FOREIGN KEY (hid) REFERENCES Hospital(hid),
+  	FOREIGN KEY (nid) REFERENCES Nurse(nid)
+);
+
+
+#populating tables-----------------------------------------------------------------------------------
+
+
+INSERT INTO Vaccine(vid,vname,cost) VALUES
+(1,'Pfizer',20),
+(2,'Moderna',15),
+(3,'Sinopharm',10);
+
+INSERT INTO Hospital VALUES
+(1,'Sping Grove','Udupi', 2, 10.0),
+(2,'Morningside','Trivandrum', 3, 12.0),
+(3,'Laguna Seca','Bengaluru', 1, 11.0),
+(4,'Eden General','Delhi', 2, 19.0),
+(5,'Clearwater Gen','Kolkata',3,6.0);
+
+INSERT INTO ShotReco(sid,pid,nid,hid,vid,shotnum) VALUES
+(1,1,101,1,2,1),
+(2,1,103,2,3,2),
+(3,2,104,2,3,1),
+(4,2,110,1,2,2),
+(5,2,109,1,2,3),
+(6,3,108,3,1,1),
+(7,4,106,2,3,1),
+(8,4,104,2,3,1),
+(9,5,107,4,2,1),
+(10,6,101,1,2,1),
+(11,6,105,3,1,1),
+(12,7,109,1,2,1),
+(13,8,104,2,3,1),
+(14,8,108,3,1,2),
+(15,10,101,1,2,1),
+(16,10,105,3,1,2),
+(17,10,108,3,1,3),
+(18,11,106,2,3,1),
+(19,11,101,1,2,2),
+(20,12,104,2,3,1),
+(21,12,103,2,3,2),
+(22,12,106,2,3,3),
+(23,14,107,4,2,1),
+(24,14,101,1,2,2),
+(25,15,109,1,2,1),
+(26,16,105,3,1,1),
+(27,16,101,1,2,2),
+(28,16,107,4,2,3),
+(29,17,105,3,1,1),
+(30,18,110,1,2,1),
+(31,19,104,2,1,1),
+(32,19,106,2,1,2);
+
+INSERT INTO Nurse VALUES
+(101,'Sahil',20,'M','Udupi',983420214,1,1),
+(102,'Juan',19,'M','Trivandrum',971582378,5,2),
+(103,'Mitrang',21,'M','Cape Comorin',997387244,2,2),
+(104,'Chris',20,'M','Trivandrum',923487489,1,2),
+(105,'Phil',23,'M','Bengaluru',971673646,1,3),
+(106,'Hamza',21,'M','Trivandrum',952312564,1,2),
+(107,'Juan',21,'M','Delhi',971583787,8,4),
+(108,'Sapnu',29,'F','Puas',975947875,17,3),
+(109,'Lulu',20,'F','Uttarpradesh',862498571,3,1),
+(110,'Caa',129,'M','Kolkata',127651471,4,1);
+
+INSERT INTO Patient(pid,pname,age,pgender,paddress,pphnum,vid,hid,doses) VALUES
+(1, 'John', 25, 'M', 'Kolkata', 983007469, 2, 1, 2),
+(2, 'Mary', 39, 'F', 'Ibadan', 983094769, 2, 4, 3),
+(3, 'Siobhan', 36, 'F', 'Kano', 983045744, 1, 3, 1),
+(4, 'Manan', 19, 'M', 'Udupi', 984734556, 3, 2, 2),
+(5, 'Elon', 56, 'M', 'Trivandrum', 875433421, 3, 5, 1),
+(6, 'Chacko', 62, 'M', 'Kochi', 971538314, 2, 1, 2),
+(7, 'Estelle', 69, 'F', 'Bengaluru', 834534567, 1, 3, 1),                                      
+(8, 'Mia', 78, 'F', 'Kolkata', 983457891, 2, 4, 2),
+(9, 'Welly', 30, 'M', 'Udupi', 987754563, null, 1, 0),
+(10, 'Ian', 28, 'M', 'Delhi', 983454378, 1, 3, 3),
+(11, 'Tiana', 22, 'F', 'Delhi', 98364222, 3, 5, 2),
+(12, 'Ajay', 45, 'M', 'Bengaluru', 876545632, 2, 4, 3),
+(13, 'Rapunzel',20, 'F', 'Udupi', 786675432, null, 1, 0),
+(14, 'Dimple', 43, 'F', 'Trivandrum', 987543210, 1, 3, 2),
+(15, 'Juan', 19, 'M', 'Trivandrum', 989899898, 3, 2, 1), 
+(16, 'Moana', 12, 'F', 'Honolulu', 923458289, 3, 5, 3),
+(17, 'Cinderella', 24, 'F', 'Delhi', 982582749, 2, 4, 1),
+(18, 'Paulie', 49, 'M', 'Kolkata', 902348683, 3, 2, 1),
+(19, 'Guiseppe', 38, 'M', 'Bengaluru', 934885392, 2, 4, 2),
+(20, 'Marielynn', 19, 'F', 'Kolkata', 923702917, null, 5, 0);
+
+
+#full table------------------------------------------------------------------------------------------
+
+
+select * from vaccine;
+select * from hospital;
+select * from nurse;
+select * from patient;
+select * from shotreco;
+
+
+#procedures------------------------------------------------------------------------------------------
+
+
+#procedure to set sell price from pharm company														.
+delimiter $$
+create procedure sellp(in perc float(10))
+begin
+	update Vaccine set price=cost where vid>0;
+    update Vaccine set price=(price*(1+(perc/100))) where vid>0;
+end $$
+delimiter ;
+
+select * from vaccine;
+drop procedure sellp;
+call sellp(10);
+
+
+#procedure to set cost of each shot in shotreco														.
+delimiter $$
+create procedure shotc()
+begin
+	update ShotReco 
+    inner join Hospital inner join Vaccine 
+    on ShotReco.vid = Vaccine.vid and ShotReco.hid = Hospital.hid
+    set ShotReco.charge = Hospital.charges + Vaccine.price;
+end $$
+delimiter ;
+
+select * from shotreco; 
+drop procedure shotc;
+call shotc();
+
+
+#procedure to add the charges of each shot    											not working yet
+delimiter $$
+create procedure totbill()
+begin
+	update Patient
+    inner join ShotReco 
+    on Patient.pid=ShotReco.pid
+    set Patient.charged = sum(ShotReco.charge);
+end $$
+delimiter ;
+
+select * from Patient;
+drop procedure totbill;
+call totbill();
+
+
+#functions-------------------------------------------------------------------------------------------
+
+
+#function to return doses left yet to recieve 
+delimiter //
+create function drem (p int)
+returns int deterministic
+begin
+	declare d int;
+    select doses from patient where patient.pid=p into d;
+    return 3-d;
+end //
+delimiter ;
+
+drop function drem;
+select pid, pname, drem(pid) as 'Doses left' from patient order by pid;
+
+
+#function to return sales generated from a particular vaccine
+delimiter //
+create function pharmcomp (p varchar(20))
+returns float deterministic
+begin
+	declare s float;
+    select sum(s.charge) from shotreco s, vaccine v where v.vid=s.vid and v.vname=p into s;
+    return s;
+end //
+delimiter ;
+drop function pharmcomp;
+
+select pharmcomp('Moderna');
+
+
+#queries---------------------------------------------------------------------------------------------
+
+
+#query to show how much each patient was charged in total													.
+select s.pid as "Patient ID", p.pname as "Patient Name" , sum(s.charge) as "Charged" 
+from ShotReco s, Patient p where p.pid=s.pid group by p.pid;
+
+
+#query to find records of patients over 60 and the vaccine they recieved									.
+select p.pid, p.pname, p.age, v.vname from patient p ,vaccine v where age>60 and v.vid=p.vid;
+
+
+#query to find the number of nurses per city																.
+select count(nname) from Nurse group by(city);
+select naddress as "City name", count(nname) as "Number of nurses" from Nurse group by(naddress); -- this one 
+
+
+#query to find the total money made by pfizer sales
+
+select sum(s.charge) from shotreco s, vaccine v where v.vid=s.vid and v.vname='Pfizer';
+
+#query to find which nurse gave which vaccine to what person												.
+
+select n.nname as 'Nurse', v.vname 'administered' , p.pname 'to patient' 
+from shotreco s ,nurse n ,patient p ,vaccine v where s.vid=v.vid and s.pid=p.pid and s.nid=n.nid order by n.nname;
+
+
+#query to find which patient is chutiya enough to not take vaccine											.
+
+select * from patient where doses=0;
+
+#query to find the total number of shots taken in each hospital												.
+select hname as "Name", sum(doses) as "Doses" 
+from Hospital h, Patient p, ShotReco s where h.hid=s.hid and s.pid=p.pid group by(hname);
+
+
+#query to find which city has highest vaccination															.
+select haddress, sum(doses) as "Doses" from Hospital h, Patient p, ShotReco s 
+where h.hid=s.hid and s.pid=p.pid group by(hname);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                        
+                            
+                            
+                             
+                            
+                            
+                            
+                            
+                            
+                            
+                            
